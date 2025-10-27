@@ -15,20 +15,28 @@ Container_Boundary(monitoring_system, "Система мониторинга с�
         ContainerDb(video_photo_db, "Video and screenshots DB", "S3")
     }
     ContainerQueue(kafka, "Message queue", "Kafka")
+    Container(stream_processor, "Потоковый обработчик", "Kafka Streams")
+    Container(rules_engine, "Движок правил", "Esper/Hazelcast")
     Container(web_app, "Web App", "TypeScript")
-    Container(mobile_app, "Web App", "Swift, Java")
+    Container(mobile_app, "Mobile App", "Swift, Java")
+
+    Container(камеры, "Камеры")
+    Container(датчики, "Датчики с животных и полей", "Python")
 }
 Container_Ext(notifications, "Notifications provider")
 Container_Ext(analytics, "Аналитический модуль")
 
-Container(камеры, "Камеры")
-Container(датчики, "Датчики с животных и полей", "Python")
-
 Rel(камеры, backend, "Передает данные")
 Rel(датчики, backend, "Передает данные")
+
 Rel(backend, dbs, "Передает, запрашивает данные")
 Rel(backend, kafka, "Публикует данные")
-Rel(backend, notifications, "Передает ")
+Rel(backend, notifications, "Передает сообщение и получателя для отправки уведомления")
+Rel(backend, analytics, "Передает агрегированные и структурированные данные для долгосрочного анализа")
+Rel(web_app, backend, "Обращается к API")
+Rel(mobile_app, backend, "Обращается к API")
 
-
+Rel(администратор, web_app, "Использует")
+Rel(менеджер, mobile_app, "Использует")
+Rel(животновод, mobile_app, "Использует")
 @enduml
