@@ -1,0 +1,34 @@
+@startuml Диаграмма контейнеров системы мониторинга скота
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Диаграмма контейнеров системы мониторинга скота
+
+Person(администратор, "Директор хозяйства, управляющий", "Получает отчеты и сводки")
+Person(менеджер, "Зоотехники, ветеринары, операторы", "Настраивают систему, мониторят показатели")
+Person(животновод, "Животновод", "Следит за сигналами, требующими вмешательства")
+
+Container_Boundary(monitoring_system, "Система мониторинга скота"){
+    Container(backend, "Monitoring System Backend", "Java, Spring")
+    Container_Boundary(dbs, "Базы данных"){
+        ContainerDb(user_info_db, "User info and Metadata DB", "PostgreSql")
+        ContainerDb(metrics_db, "Metrics DB", "MongoDB")
+        ContainerDb(video_photo_db, "Video and screenshots DB", "S3")
+    }
+    ContainerQueue(kafka, "Message queue", "Kafka")
+    Container(web_app, "Web App", "TypeScript")
+    Container(mobile_app, "Web App", "Swift, Java")
+}
+Container_Ext(notifications, "Notifications provider")
+Container_Ext(analytics, "Аналитический модуль")
+
+Container(камеры, "Камеры")
+Container(датчики, "Датчики с животных и полей", "Python")
+
+Rel(камеры, backend, "Передает данные")
+Rel(датчики, backend, "Передает данные")
+Rel(backend, dbs, "Передает, запрашивает данные")
+Rel(backend, kafka, "Публикует данные")
+Rel(backend, notifications, "Передает ")
+
+
+@enduml
