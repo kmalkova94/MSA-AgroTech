@@ -11,12 +11,10 @@ Container_Boundary(monitoring_system, "Система мониторинга с�
     Container(backend, "Monitoring System Backend", "Java, Spring")
     Container_Boundary(dbs, "Базы данных"){
         ContainerDb(user_info_db, "User info and Metadata DB", "PostgreSql")
-        ContainerDb(metrics_db, "Metrics DB", "MongoDB")
+        ContainerDb(metrics_db, "Metrics DB", "Сlickhouse")
         ContainerDb(video_photo_db, "Video and screenshots DB", "S3")
     }
     ContainerQueue(kafka, "Message queue", "Kafka")
-    Container(stream_processor, "Потоковый обработчик", "Kafka Streams")
-    Container(rules_engine, "Движок правил", "Esper/Hazelcast")
     Container(web_app, "Web App", "TypeScript")
     Container(mobile_app, "Mobile App", "Swift, Java")
 
