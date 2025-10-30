@@ -1,0 +1,41 @@
+@startuml Диаграмма компонентов системы мониторинга скота
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Monitoring system backend 
+
+Container_Boundary(backend, "Monitoring system backend"){
+    Component(api_gateway, "API Gateway", "Java/Spring")
+
+    Component(login_service, "Сервис авторизации", "Java, Spring")
+    Component(registration_service, "Сервис регистрации", "Java, Spring")
+    Component(verification_service, "Управление ролями и правами", "Java, Spring")
+
+    Component(behavior_analyzer_service, "Анализ поведения животных", "Java, Spring")
+    Component(health_analyzer_service, "Оценка здоровья животных", "Java, Spring")
+    Component(population_analyzer_service, "Подсчет поголовья стада", "Java, Spring")
+
+    Component(feed_service, "Сервис управления кормушками и поилками", "Java, Spring")
+    Component(filter_service, "Сервис мониторинга фильтров воды", "Java, Spring")
+    Component(monitoring_device_service, "Сервис управления камерами и датчиками", "Java, Spring")
+
+    Component(accounting_service, "Сервис учета запасов и прогнозирования расходов", "Java, Spring")
+
+    Component(metrics_service, "Сервис управления и сбора метрик", "Java, Spring")
+    Component(video_processing_service, "Сервис обработки видео", "Java, Spring")
+    Component(sensor_processing_service, "Сервис обработки данных с датчиков", "Java, Spring")
+
+    Component(sync_service, "Сервис синхронизации данных", "Java, Spring")
+
+    Component(notification_service, "Сервис уведомлений", "Java, Spring")
+
+    ComponentDb(user_info_db, "User info and Metadata DB", "PostgreSql")
+    ComponentDb(metrics_db, "Metrics DB", "Сlickhouse")
+    ComponentDb(video_photo_db, "Video and screenshots DB", "S3")
+
+}
+
+ContainerQueue(kafka, "Message queue", "Kafka")
+
+
+
+@enduml
