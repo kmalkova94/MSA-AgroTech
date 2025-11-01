@@ -1,0 +1,71 @@
+@startuml Диаграмма кода C4 Behavior Analyzer service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
+
+title Behavior analyzer service code diagram
+
+class KafkaConsumer {
+    -behaviorAnalyzerService : BehaviorAnalyzerService
+    +listen(RawEvent)
+}
+
+class KafkaProducer {
+    +sendBehaviorMetrics()
+    +sendAbnormalBehaviorMetrics()
+}
+
+class BehaviorAnalyzerController {
+    +getBehaviorMetrics()
+    +getAnimalBehaviorHistory(UUID)
+}
+
+class BehaviorAnalyzerService {
+    -behaviorDAO : AnimalBehaviorDAO
+    -kafkaTemplate : KafkaTemplate
+    +analyzeMovementPatterns()
+    +detectAbnormalBehavior()
+    +detectSocialInteractions()
+}
+
+interface AnimalBehaviorDAO {
+    +findByAnimalId(UUID) : BehaviorMetrics
+    +saveMetrics(AnimalBehavior)
+    +findAbnormalPatterns()
+}
+
+class AnimalBehavior {
+    -animalId : UUID
+    -timestamp : LocalDateTime
+    -movementPattern : MovementPatterns 
+    -healthCorrelation : Double
+}
+
+class BehaviorMetrics {
+    -normalBehaviorScore : Double
+    -abnormalBehaviorCount : Integer 
+    -socialInteractionIndex : Double 
+}
+
+enum MovementPattern {
+    GRAZING
+    RESTING
+    MOVING
+    ISOLATED
+}
+
+class BehaviorAnalyzerRequest {
+    -animalId : UUID 
+    -startTime : LocalDateTime
+    -endTime : LocalDateTime
+}
+
+class BehaviorAnalyzerResponse {
+    -metrics : List<BehaviorMetrics>
+    -recommendations : List<String>
+}
+
+BehaviorAnalyzerController --> BehaviorAnalyzerService : "call"
+BehaviorAnalyzerService --> AnimalBehaviorDAO : "get/save Metrics"
+BehaviorAnalyzerService --> KafkaProducer : send aggregated events
+
+
+@enduml
