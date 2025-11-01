@@ -26,10 +26,6 @@ Container_Boundary(backend, "Monitoring system backend"){
 
     Component(notification_service, "Сервис уведомлений", "Java, Spring")
 
-    ComponentDb(metadata_db, "User info and Metadata DB", "PostgreSql")
-    ComponentDb(metrics_db, "Metrics DB", "Сlickhouse")
-    ComponentDb(video_photo_db, "Video and screenshots DB", "S3")
-    ComponentDb(event_db, "Event DB", "Clickhouse")
 }
 Container_Boundary(devices, "Датчики и камеры"){
     Container(камеры, "Камеры")
@@ -37,6 +33,11 @@ Container_Boundary(devices, "Датчики и камеры"){
     Container(кормушки, "Кормушки", "Python")
     Container(поилки, "Поилки", "Python")
 }
+
+ContainerDb(metadata_db, "User info and Metadata DB", "PostgreSql")
+ContainerDb(metrics_db, "Metrics DB", "Сlickhouse")
+ContainerDb(video_photo_db, "Video and screenshots DB", "S3")
+ContainerDb(event_db, "Event DB", "Clickhouse")
 
 ContainerQueue(kafka, "Message queue", "Kafka")
 Container_Ext(analytics, "Аналитический модуль")

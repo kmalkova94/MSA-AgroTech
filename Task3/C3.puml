@@ -1,4 +1,5 @@
 @startuml Диаграмма компонентов системы мониторинга скота
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 title Monitoring system backend 
@@ -31,16 +32,18 @@ Container_Boundary(backend, "Monitoring system backend"){
 
     Component(notification_service, "Сервис уведомлений", "Java, Spring")
 
-    ComponentDb(metadata_db, "User info and Metadata DB", "PostgreSql")
-    ComponentDb(metrics_db, "Metrics DB", "Сlickhouse")
-    ComponentDb(video_photo_db, "Video and screenshots DB", "S3")
 }
+
 Container_Boundary(devices, "Датчики и камеры"){
     Container(камеры, "Камеры")
     Container(датчики, "Датчики с животных и полей", "Python")
     Container(кормушки, "Кормушки", "Python")
     Container(поилки, "Поилки", "Python")
 }
+
+ContainerDb(metadata_db, "User info and Metadata DB", "PostgreSql")
+ContainerDb(metrics_db, "Metrics DB", "Сlickhouse")
+ContainerDb(video_photo_db, "Video and screenshots DB", "S3")
 
 ContainerQueue(kafka, "Message queue", "Kafka")
 Container_Ext(analytics, "Аналитический модуль")

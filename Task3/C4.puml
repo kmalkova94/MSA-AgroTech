@@ -1,0 +1,139 @@
+@startuml Диаграмма кода     C4 EventProcessingService
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
+
+title EventProcessingService code diagram
+
+abstract class Event {
+    -eventId : UUID
+    -timestamp : LocalDateTime
+    -deviceId : UUID
+    -animalId : UUID
+    -eventType : EventType
+    -mapper : ObjectMapper
+    +validate()
+}
+
+class BehaviorEvent {
+    -activityLevel : Double
+    -movementPattern : MovementPattern
+    -socialInteraction : SocialInteraction
+    -feedingBehavior : FeedingBehavior
+}
+
+class HealthEvent {
+    -bodyTemperature : Double
+    -heartRate : Integer
+    -respiratoryRate : Integer
+    -healthStatus : HealthStatus
+    +isCritical()
+}
+
+class SensorEvent {
+    -sensorType : SensorType 
+    -geoLocation : GeoPoint 
+}
+
+enum EventType {
+    BEHAVIOR 
+    HEALTH 
+    SENSOR 
+    ENVIRONMENT
+}
+
+enum MovementPattern {
+    RESTING 
+    MOVING 
+    RUNNING 
+}
+
+enum HealthStatus {
+    EXCELLENT
+    GOOD 
+    FAIR 
+    POOR 
+    CRITICAL 
+}
+
+enum InteractionType {
+    GRAZING
+    PLAYING
+    AGGRESSION
+    ISOLATED
+}
+
+enum FeedingBehavior {
+    ACTIVE 
+    NORMAL 
+    LOW 
+}
+
+interface EventHandler {
+    +canHandle(EventType) : Boolean
+    +process(Event) : ProcessingResult
+    +validate(Event) : ValidationResult
+}
+
+class BehaviorEventHandler {
+    -notificationService : NotificationService
+    +process(Event) : ProcessingResult
+}
+
+class SensorEventHandler {
+    -notificationService : NotificationService
+    +process(Event) : ProcessingResult
+}
+
+class HealthEventHandler {
+    -notificationService : NotificationService
+    +process(Event) : ProcessingResult
+}
+
+class EventProcessor {
+    -handlers : Map<EventType, EventHandler>
+    -eventDAO : EventDAO 
+    +registerHandler(EventHandler) : void
+    +processEvent(RawEvent) : ProcessingResult
+    +routeToHandler(Event) : EventHandler
+}
+
+interface EventDAO {
+    +save(Event)
+    +findByAnimalId(UUID)
+    +findByEventType(EventType)
+}
+
+class ProcessingResult {
+    -success : Boolean
+    -processedEvent : Event
+    -errors : List<String>
+    -timestamp : LocalDateTime
+}
+
+class KafkaConsumer {
+    -eventProcessor : EventProcessor
+    +listen(RawEvent)
+}
+
+
+BehaviorEvent --|> Event : "extends"
+HealthEvent --|> Event : "extends"
+SensorEvent --|> Event : "extends"
+
+Event --> EventType : "use"
+BehaviorEvent --> MovementPattern : "use"
+BehaviorEvent --> InteractionType : "use"
+BehaviorEvent --> FeedingBehavior : "use"
+HealthEvent --> HealthStatus : "use"
+
+EventHandler --> Event : "use"
+BehaviorEventHandler --|> EventHandler : "implements"
+SensorEventHandler --|> EventHandler : "implements"
+HealthEventHandler --|> EventHandler : "implements"
+
+EventProcessor --> EventHandler : "routes to specific handler"
+EventProcessor --> EventDAO : "save result to DB"
+EventProcessor --> ProcessingResult : "use"
+
+KafkaConsumer --> EventProcessor : "calls EventProcessor to handle event"
+
+@enduml
