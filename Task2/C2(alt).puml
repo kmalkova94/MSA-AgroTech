@@ -1,0 +1,46 @@
+@startuml Диаграмма контейнеров системы мониторинга скота
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Диаграмма контейнеров системы мониторинга скота
+
+Person(администратор, "Директор хозяйства, управляющий", "Получает отчеты и сводки")
+Person(менеджер, "Зоотехники, ветеринары, операторы", "Настраивают систему, мониторят показатели")
+Person(животновод, "Животновод", "Следит за сигналами, требующими вмешательства")
+
+Container_Boundary(monitoring_system, "Система мониторинга скота"){
+    Container(backend, "Monitoring System Backend", "Java, Spring")
+    Container_Boundary(dbs, "Базы данных"){
+        ContainerDb(user_info_db, "User info and Metadata DB", "PostgreSql")
+        ContainerDb(metrics_db, "Metrics DB", "Clickhouse")
+        ContainerDb(video_photo_db, "Video and screenshots DB", "S3")
+    }
+    ContainerQueue(kafka, "Message queue", "Kafka")
+    Container(stream_processor, "Потоковый обработчик", "Kafka Streams")
+    Container(rules_engine, "Движок правил", "Esper/Hazelcast")
+    Container(web_app, "Web App", "TypeScript")
+    Container(mobile_app, "Mobile App", "Swift, Java")
+
+    Container(камеры, "Камеры")
+    Container(датчики, "Датчики с животных и полей", "Python")
+}
+Container_Ext(notifications, "Notifications provider")
+Container_Ext(analytics, "Аналитический модуль")
+
+Rel(камеры, kafka, "Передает данные")
+Rel(датчики, kafka, "Передает данные")
+Rel(kafka, stream_processor, "Читает поток сообщений")
+Rel(kafka, rules_engine, "Читает поток сообщений")
+Rel(stream_processor, kafka, "Публикует агрегированные данные")
+Rel(rules_engine, backend, "Отправляет уведомления")
+
+Rel(backend, dbs, "Передает, запрашивает данные")
+Rel(backend, kafka, "Публикует данные")
+Rel(backend, notifications, "Передает сообщение и получателя для отправки уведомления")
+Rel(backend, analytics, "Передает агрегированные и структурированные данные для долгосрочного анализа")
+Rel(web_app, backend, "Обращается к API")
+Rel(mobile_app, backend, "Обращается к API")
+
+Rel(администратор, web_app, "Использует")
+Rel(менеджер, mobile_app, "Использует")
+Rel(животновод, mobile_app, "Использует")
+@enduml
